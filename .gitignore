@@ -1,0 +1,12 @@
+/Questionnaire
+/data
+# Temporary office lock files
+~$*
+
+# Python / ML artifacts
+*.docx
+*.pt
+*.bin
+*.onnx
+*.safetensors
+__pycache__/
