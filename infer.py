@@ -10,7 +10,7 @@ DATA_DIR = "data"
 TOKENIZER_VOCAB = os.path.join(DATA_DIR, "tokenizer_char_vocab.json")
 CHECKPOINT_PATH = os.path.join(DATA_DIR, "model_bengali_toto.pt")
 
-def translate(english_text, model, tokenizer, device, max_len=100):
+def translate(english_text, model, tokenizer, device, max_len=128):
     model.eval()
     src_ids = tokenizer.encode(english_text, add_bos=True, add_eos=True)
     src_tensor = torch.tensor([src_ids], dtype=torch.long, device=device)
@@ -30,6 +30,7 @@ def translate(english_text, model, tokenizer, device, max_len=100):
 
 def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Using device: {device}")
 
     if not os.path.exists(CHECKPOINT_PATH):
         print(f"Error: Model checkpoint not found at {CHECKPOINT_PATH}. Please run train.py first.")
@@ -38,12 +39,12 @@ def main():
     tokenizer = CharacterTokenizer.load(TOKENIZER_VOCAB)
     model = CharSeq2SeqTransformer(
         vocab_size=tokenizer.vocab_size,
-        d_model=256,
+        d_model=512,
         nhead=8,
-        num_encoder_layers=4,
-        num_decoder_layers=4,
-        dim_feedforward=512,
-        dropout=0.1,
+        num_encoder_layers=6,
+        num_decoder_layers=6,
+        dim_feedforward=1024,
+        dropout=0.15,
         pad_idx=tokenizer.pad_id
     ).to(device)
 
