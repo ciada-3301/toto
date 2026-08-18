@@ -21,7 +21,7 @@ class PositionalEncoding(nn.Module):
 
 
 class CharSeq2SeqTransformer(nn.Module):
-    def __init__(self, vocab_size, d_model=256, nhead=8, num_encoder_layers=4, num_decoder_layers=4, dim_feedforward=512, dropout=0.1, pad_idx=0):
+    def __init__(self, vocab_size, d_model=512, nhead=8, num_encoder_layers=6, num_decoder_layers=6, dim_feedforward=1024, dropout=0.15, pad_idx=0):
         super(CharSeq2SeqTransformer, self).__init__()
         self.d_model = d_model
         self.pad_idx = pad_idx
@@ -72,28 +72,6 @@ class CharSeq2SeqTransformer(nn.Module):
             tgt_mask=tgt_mask,
             memory_mask=None,
             src_key_padding_mask=src_padding_mask,
-            tgt_key_padding_mask=tgt_padding_mask,
-            memory_key_padding_mask=src_padding_mask
-        )
-
-        return self.fc_out(out)
-
-    def encode(self, src):
-        src_padding_mask = (src == self.pad_idx)
-        src_emb = self.pos_encoder(self.embedding(src) * math.sqrt(self.d_model))
-        return self.transformer.encoder(src_emb, src_key_padding_mask=src_padding_mask)
-
-    def decode(self, tgt, memory, src_padding_mask):
-        device = tgt.device
-        tgt_mask = self.generate_square_subsequent_mask(tgt.shape[1], device)
-        tgt_padding_mask = (tgt == self.pad_idx)
-        tgt_emb = self.pos_encoder(self.embedding(tgt) * math.sqrt(self.d_model))
-
-        out = self.transformer.decoder(
-            tgt=tgt_emb,
-            memory=memory,
-            tgt_mask=tgt_mask,
-            memory_mask=None,
             tgt_key_padding_mask=tgt_padding_mask,
             memory_key_padding_mask=src_padding_mask
         )
